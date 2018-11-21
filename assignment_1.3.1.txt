@@ -1,90 +1,65 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<config xmlns="http://web-harvest.sourceforge.net/schema/1.0/config" scriptlang="groovy">
-  
- 			<var-def name="Url">
-				<http url="https://www.athome.com/on/demandware.store/Sites-athome-Site/default/Stores-FindAll">
-				</http>
-			</var-def>
+<config xmlns="http://web-harvest.sourceforge.net/schema/1.0/config"
+	scriptlang="groovy">
 
-				<var-def name="locations">
-        			<xpath expression="//*[@class='store-location-id']/a/text()"> 
-            				<html-to-xml>
-  				  			<var name="Url"/>
-  				 	</html-to-xml>
-        			</xpath> 
-        	</var-def>
-  				
-   			<var-def name="city">
-        			<xpath expression="//*[@class='store-city']/text()"> 
-            				<html-to-xml>
-  				  			<var name="Url"/>
-  				  	</html-to-xml>
-        			</xpath> 
-        	</var-def>
-        	
-        	<var-def name="address">
-        			<xpath expression="//*[@class='store-address-1']/text()"> 
-            				<html-to-xml>
-  				  			<var name="Url"/>
-  			  		</html-to-xml>
-        			</xpath> 
-        	</var-def>
-        	
-        	
-        	<var-def name="phoneNumber">
-        			<xpath expression="//*[@class='store-phone']/text()"> 
-            				<html-to-xml>
-  				  			<var name="Url"/>
-  				  	</html-to-xml>
-        			</xpath> 
-        	</var-def>
-        	
-        	<var-def name="location_link">
-        			<xpath expression="//*[@class='store-map']/a/@href"> 
-            				<html-to-xml>
-  				  			<var name="Url"/>
-  			  		</html-to-xml>
-        			</xpath> 
-        	</var-def>
-        	
-        	
-        	
-        	
-        	<script><![CDATA[ 
-        def	locations = locations.toString().split('\n');
-        def	city = city.toString().split('\n');
-        def	phoneNumber = phoneNumber.toString().split('\n');
-        def	address = address.toString().split('\n');
-        def	locationLink = location_link.toString().split('\n');
-        	
-        	 exList = new ArrayList();
-        	 
-        	for(i=0; i<50 ; i++){
-        		locationInfo = new HashMap();
-        		locationInfo.put("Location", locations.getAt(i));
-        		locationInfo.put("City", city.getAt(i).toString());
-        		locationsState  = locations.getAt(i).toString().split('-');
-        		locationInfo.put("State", locationsState[0]);
-        		locationInfo.put("Address", address.getAt(i));
-        		locationInfo.put("Phone", phoneNumber.getAt(i));
-           		locationInfo.put("Location_Link", locationLink.getAt(i).toString());
-        		
-        		exList.add(locationInfo);
-        	}
-        	 
-        	
-    ]]></script>
-        	
- 
-    <export include-original-data="false">
-    
-    <multi-column list="${exList}" split-results="true">
-            <put-to-column-getter name="Location" property="Location" />
-            <put-to-column-getter name="City" property="City" />
-            <put-to-column-getter name="State" property="State" />
-            <put-to-column-getter name="Address" property="Address" />
-            <put-to-column-getter name="Phone" property="Phone" />
-            <put-to-column-getter name="Location_Link" property="Location_Link" />
-    </multi-column>
-    </export> 
+	
+	<var-def name="page">
+		<http url="https://www.catofashions.com/catostores.cfm?locSt=MS">
+		</http>
+	</var-def>
+	<var-def name="cityName">
+		<xpath expression="//*[@class='storeContainer']/div[2]/h4/text()">
+			<html-to-xml>
+				<var name="page" />
+			</html-to-xml>
+		</xpath>
+	</var-def>
+	<var-def name="locationDetails">
+		<xpath expression="//*[@class='storeContainer']/div[2]/h5/text()">
+			<html-to-xml>
+				<var name="page" />
+			</html-to-xml>
+		</xpath>
+	</var-def>
+	<var-def name="address">
+		<xpath expression="//*[@class='storeContainer']/div[2]//p[1]/text()">
+			<html-to-xml>
+				<var name="page" />
+			</html-to-xml>
+		</xpath>
+	</var-def>
+	<var-def name="phone">
+		<xpath expression="//*[@class='storeContainer']/div[2]/a[1]/text()">
+			<html-to-xml>
+				<var name="page" />
+			</html-to-xml>
+		</xpath>
+	</var-def>
+	<script><![CDATA[
+		def	locationDetails = locationDetails.toString().split('\n');
+		def	cityName = cityName.toString().split('\n');
+		def	phone = phone.toString().split('\n');
+		def	address = address.toString().split('\n');
+		detailsList = new ArrayList();
+		for(i=0; i<50 ; i++){
+			locDetails = new HashMap();
+			locDetails.put("serial", (i+1));
+			locDetails.put("location", locationDetails.getAt(i));
+			locDetails.put("city", cityName.getAt(i));
+			locDetails.put("state", "Mississippi");
+			locDetails.put("address", address.getAt(i));
+			locDetails.put("phone", phone.getAt(i));
+			detailsList.add(locDetails);
+		}
+	]]></script>
+	<export include-original-data="false">
+		<multi-column list="${detailsList}" split-results="true">
+     		<put-to-column-getter name="serial" property="serial" />
+			<put-to-column-getter name="location" property="location" />
+			<put-to-column-getter name="city" property="city" />
+			<put-to-column-getter name="state" property="state" />
+			<put-to-column-getter name="address" property="address" />
+			<put-to-column-getter name="phone" property="phone" />
+		</multi-column>
+	</export>
 </config>
