@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config xmlns="http://web-harvest.sourceforge.net/schema/1.0/config" scriptlang="groovy">
+  
+<create-datastore name="${datastorename}">
+        <datastore-column name="name"/>
+        <datastore-column name="surname"/>
+        <datastore-column name="birthdate"/>
+        <datastore-column name="sex"/>
+        <datastore-column name="height"/>
+    </create-datastore>
+<var-def name="input_json">
+      <json>
+         <xml-to-json>
+            <datastore name="RandomNames">
+               <template>select * from @this</template>
+            </datastore> 
+         </xml-to-json>
+      </json>      
+    </var-def>
+
+ <script><![CDATA[ 
+       list_names = new ArrayList();
+       list_surnames = new ArrayList();
+       list_sex = new ArrayList();
+       list_sex.add("M");
+       list_sex.add("F");
+       Data = input_json.getWrappedObject().get(0).getWrappedObject().get("row");
+       
+       for (int i=0; i < 100; i++) {
+          list_names.add(Data.get(i).get("firstname").asText());
+          list_surnames.add(Data.get(i).get("surname").asText());
+       }
+
+       sys.defineVariable("list_names", list_names, true);
+       sys.defineVariable("list_surnames", list_surnames, true);
+       sys.defineVariable("list_sex", list_sex, true);
+    ]]></script>
+
+<while condition="true" maxloops="500" index="i">
+       <script><![CDATA[ 
+           import java.util.Random;
+           import java.util.ArrayList;
+           import java.util.Date;
+           import java.text.SimpleDateFormat;
+           import java.util.Calendar;
+ 
+           Random rnd = new Random();
+           Map insertParamMap = new HashMap();
+           
+           start_date = new SimpleDateFormat("yyyy-mm-dd").parse("1950-01-01");
+           end_date = new SimpleDateFormat("yyyy-mm-dd").parse("1999-01-01");
+           new_ctr = (int)((end_date.getTime() - start_date.getTime()) / (1000 * 24 * 60 * 60)) + 1;
+           m_rnd_ctr = rnd.nextInt(new_ctr);
+
+           m_name_idx = rnd.nextInt(100);          
+           m_surname_idx = rnd.nextInt(100);
+           m_sex = rnd.nextInt(2);
+           m_height = rnd.nextInt(200 -140) + 140;
+
+           Calendar c = Calendar.getInstance();
+           c.setTime(start_date);
+           c.add(Calendar.DATE, m_rnd_ctr);
+           m_birthdate = new SimpleDateFormat("yyyy-MM-dd").format(c.getTime());
+            
+           insertParamMap.put("name", list_names.get(m_name_idx).toString());
+           insertParamMap.put("surname", list_surnames.get(m_surname_idx).toString());
+           insertParamMap.put("birthdate", m_birthdate.toString());
+           insertParamMap.put("sex", list_sex.get(m_sex).toString());
+           insertParamMap.put("height", m_height.toString());
+           
+           jsonValueMap = new com.google.gson.Gson().toJson(insertParamMap);
+       ]]></script> 
+        <insert-datastore datastore-name="${datastorename}" json-value-map="${jsonValueMap}"/>
+    </while>
+<export include-original-data="false">
+        <single-column name="name of datastore" value="${datastorename}"/>
+    </export>
+</config>

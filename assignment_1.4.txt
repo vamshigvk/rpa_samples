@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config xmlns="http://web-harvest.sourceforge.net/schema/1.0/config" scriptlang="groovy">
+
+<var-def name="jsonData">
+  <http method="get" url="https://s3.amazonaws.com/wf-vr-training/trainings/json/bakery.json"/>
+</var-def>
+
+  
+<script><![CDATA[ 
+
+	import com.google.gson.JsonObject;
+    import com.google.gson.Gson;
+    import com.google.gson.JsonArray;
+    import com.google.gson.JsonElement;
+    import com.google.gson.JsonParser;  
+        
+    cakeToppings = 0;
+   	ppuDonut = 0.0;
+    batterType = new ArrayList();
+    	
+	JsonArray items = new Gson().fromJson(jsonData.toString(), JsonObject.class).getAt("bakery");
+	JsonParser parser=new JsonParser();
+	
+	  for (int i = 0; i < items.size(); i++) 
+	  {
+             JsonElement name = items.get(i).get("name");
+             JsonElement type = items.get(i).get("type");
+             if(name.value.equals("Cake"))
+             {
+                	JsonArray topping = items.get(i).get("topping");
+                	cakeToppings = cakeToppings + topping.size();             
+             }
+             if(name.value.equals("Old Fashioned"))
+             {       	                
+                  JsonElement batters = parser.parse(items.get(i).get("batters").toString());
+                  JsonArray batter = batters.getAsJsonArray("batter");
+                  for(j=0;j<batter.size();j++)
+                  batterType.add(batter.get(j).get("type"));
+             }
+            JsonElement ppu=items.get(i).get("ppu");
+            ppuDonut=ppuDonut+(ppu.value);
+             
+      }
+]]></script>
+    <export include-original-data="true">
+  		 <single-column name="topping_length" value="${cakeToppings}" />
+   		 <single-column name="batter_type" value="${batterType}" />
+   		  <single-column name="ppu" value="${ppuDonut}" />
+    </export>
+
+</config>

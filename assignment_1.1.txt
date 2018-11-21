@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config charset="UTF-8">
+  
+  <var-def name="input_text">
+	<template>
+		 [{"Text":"${phrases}"}]
+		</template>	
+	</var-def>
+	
+	<var-def name="api_for_translation">
+	<http-extended url="https://api.cognitive.microsofttranslator.com/detect?api-version=3.0" method="post" content-type="application/json">
+	  <http-header-extended name="Ocp-Apim-Subscription-Key">
+               83ffa3bd24bf4f75aa0814c3713bd0d4
+            </http-header-extended>
+            <var name="input_text"/>
+	</http-extended>	
+	</var-def>
+	
+	    <var-def name="language">
+      <json expression="$.[0]language">
+        <var name="api_for_translation"/>
+      </json>
+    </var-def>	
+	
+	<export include-original-data="true">
+      <single-column name="language detect" value="${language}"/>
+	</export>
+</config>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<?xml version="1.0" encoding="UTF-8"?>
+<config charset="UTF-8">
+	
+ <var-def name="input_text">
+	<template>
+		 [{"Text":"${phrases}"}]
+		</template>	
+	</var-def>  
+  
+<required name="phrases"/>	
+	<var-def name="translated_language">
+	<http-extended url="https://api.cognitive.microsofttranslator.com/translate?api-version=3.0&amp;to=en" method="post" content-type="application/json">
+		<http-header-extended name="Ocp-Apim-Subscription-Key">
+		83ffa3bd24bf4f75aa0814c3713bd0d4
+		</http-header-extended> 
+		 <var name="input_text"/> 
+	</http-extended>	
+	</var-def>
+  
+  	
+  
+    <export include-original-data="true">
+    <single-column name="Translated Text" value="${translated_language}"></single-column>
+    </export>
+
+</config>
