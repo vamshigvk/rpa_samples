@@ -1,19 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <config xmlns="http://web-harvest.sourceforge.net/schema/1.0/config"
-	charset="UTF-8">
-	<var-def name="myListCol">
-		<template>${id}</template>
+	charset="UTF-8" scriptlang="groovy">
+	<var-def name="serialNum">
+		<template>${serial}</template>
 	</var-def>
-	<while condition='${myListCol.toString().trim().equals("50")}'
-		maxloops='1'>
-		<mail smtp-host="smtp.gmail.com" smtp-port="587" type="html"
-			from="dharmavaramnataraju@gmail.com" to="tuk.tuk.rpa@gmail.com" cc="dharmavaramnataraju@gmail.com"
-			subject="Nataraju WebScraping and SendMail Assignment" charset="UTF-8"
-			username="dharmavaramnataraju@gmail.com" password="nattu@143"
-			security="ssl"><![CDATA[
-	"${applicationHost}/workfusion/secure/business-process/edit/${item.getWrappedObject().getRun().getRootRunUuid()}"
-]]></mail>
-	</while>
-	<export include-original-data="true">
-	</export>
+	<while condition="${serialNum.toString()=='50'}" maxloops="1">
+      
+		<mail smtp-host="smtp.gmail.com"
+              smtp-port="587"
+              type="html"
+              from="raghavtemp26@gmail.com"
+              to="tuk.tuk.rpa@gmail.com"
+              subject="Assignment 3 CoreFundamentals - WebScraping and Send Mail by Raghavendiran V"
+              username="raghavtemp26@gmail.com"
+              password="baymax_26"
+              security="ssl">
+   <![CDATA[
+link=${applicationHost}/workfusion/secure/business-process/edit/${item.getWrappedObject().getRun().getRootRunUuid()}
+]]>
+        </mail></while>
+      <export include-original-data="true">
+      </export>
+	
+	
 </config>
